@@ -1,0 +1,42 @@
+name: Judge Code
+
+on: push
+permissions:
+  contents: write
+
+jobs:
+  judge-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Download test and result
+        run: |
+          rm -rf Predictor/src/main/java/hardwar/branch/prediction/shared
+          wget -O judge.zip http://159.69.210.96:35231/BranchPredictionSimulationJudge-main.zip
+          unzip judge.zip
+          mv BranchPredictionSimulationJudge-main/* .
+          rm -rf BranchPredictionSimulationJudge-main
+      - name: Judge Tests
+        run: bash Scripts/judge-predictor.sh
+        env:
+          predictors: "GAg,GAp,GAs,PAg,PAp,PAs,SAg,SAp,SAs"
+          instructions: "Test/GAg/instruction.json,Test/GAp/instruction.json,Test/GAs/instruction.json,Test/PAg/instruction.json,Test/PAp/instruction.json,Test/PAs/instruction.json,Test/SAg/instruction.json,Test/SAp/instruction.json,Test/SAs/instruction.json"
+          results: "Test/GAg/result.json,Test/GAp/result.json,Test/GAs/result.json,Test/PAg/result.json,Test/PAp/result.json,Test/PAs/result.json,Test/SAg/result.json,Test/SAp/result.json,Test/SAs/result.json"
+          expected_results: "Test/GAg/expected-result.json,Test/GAp/expected-result.json,Test/GAs/expected-result.json,Test/PAg/expected-result.json,Test/PAp/expected-result.json,Test/PAs/expected-result.json,Test/SAg/expected-result.json,Test/SAp/expected-result.json,Test/SAs/expected-result.json"
+      - name: Setup git
+        run: |
+          git config --global user.name 'Hardwar Judge'
+          git config --global user.email 'Hardwar2023@users.noreply.github.com'
+      - name: Add commit
+        run: |
+          git add grade.txt
+      - name: Push
+        run: |
+          git commit -m "Grade" || true
+          git push

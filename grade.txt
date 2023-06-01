@@ -1,0 +1,28 @@
+Thu Jun  1 10:59:20 UTC 2023
+GAg: 
+Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 101 out of 1000 assertions passed
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+GAp: 
+Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 287 out of 1000 assertions passed
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+GAs: 
+Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 203 out of 1000 assertions passed
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+PAg: 
+Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 102 out of 1000 assertions passed
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+PAp: 
+Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 260 out of 1000 assertions passed
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+PAs: 
+Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 262 out of 1000 assertions passed
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+SAg: 
+Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 114 out of 1000 assertions passed
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+SAp: 
+Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 342 out of 1000 assertions passed
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
+SAs: 
+Exception in thread "main" hardwar.branch.prediction.judge.TestFailedException: Test failed, 257 out of 1000 assertions passed
+	at hardwar.branch.prediction.judge.Judge.main(Judge.java:39)
