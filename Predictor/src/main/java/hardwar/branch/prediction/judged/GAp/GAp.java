@@ -51,10 +51,11 @@ public class GAp implements BranchPredictor {
         Bit[] concat = new Bit[bI.length + BHR.getLength()];
         System.arraycopy(bI, 0, concat, 0, bI.length);
         System.arraycopy(this.BHR.read(), 0, concat, bI.length, this.BHR.getLength());
-        if (PAPHT.get(concat) == null) {
-            SC.load(getDefaultBlock());
-            return BranchResult.NOT_TAKEN;
-        }
+//        if (PAPHT.get(concat) == null) {
+//            SC.load(getDefaultBlock());
+//            return BranchResult.NOT_TAKEN;
+//        }
+        PAPHT.setDefault(concat , getDefaultBlock());
         SC.load(PAPHT.get(concat));
         if (SC.read()[0] == Bit.ONE)
             return BranchResult.TAKEN;
