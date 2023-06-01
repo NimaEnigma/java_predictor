@@ -40,13 +40,8 @@ public class PAp implements BranchPredictor {
         // TODO: complete Task 1
         ShiftRegister BHR = PABHR.read(branchInstruction.getInstructionAddress());
 
-        Bit[] bI = branchInstruction.getInstructionAddress();
-        Bit[] concat = new Bit[bI.length + BHR.getLength()];
-        System.arraycopy(bI, 0, concat, 0, bI.length);
-        System.arraycopy(BHR.read(), 0, concat, bI.length, BHR.getLength());
-
         try {
-            SC.load(PAPHT.get(concat));
+            SC.load(PAPHT.get(getCacheEntry(branchInstruction.getInstructionAddress(), BHR.read())));
             if (SC.read()[0] == Bit.ONE)
                 return BranchResult.TAKEN;
             return BranchResult.NOT_TAKEN;
@@ -62,11 +57,7 @@ public class PAp implements BranchPredictor {
         // TODO:complete Task 2
         SC.load(CombinationalLogic.count(SC.read(), BranchResult.isTaken(actual), CountMode.SATURATING));
         ShiftRegister BHR = PABHR.read(instruction.getInstructionAddress());
-        Bit[] bI = instruction.getInstructionAddress();
-        Bit[] concat = new Bit[bI.length + BHR.getLength()];
-        System.arraycopy(bI, 0, concat, 0, bI.length);
-        System.arraycopy(BHR.read(), 0, concat, bI.length, BHR.getLength());
-        PAPHT.putIfAbsent(concat, SC.read());
+        PAPHT.putIfAbsent(getCacheEntry(instruction.getInstructionAddress(), BHR.read()), SC.read());
         BHR.insert(Bit.of(BranchResult.isTaken(actual)));
         PABHR.write(instruction.getInstructionAddress(), BHR.read());
     }
