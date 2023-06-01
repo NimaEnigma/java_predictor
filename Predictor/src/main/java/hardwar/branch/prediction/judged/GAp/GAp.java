@@ -51,15 +51,16 @@ public class GAp implements BranchPredictor {
         Bit[] concat = new Bit[bI.length + BHR.getLength()];
         System.arraycopy(bI, 0, concat, 0, bI.length);
         System.arraycopy(this.BHR.read(), 0, concat, bI.length, this.BHR.getLength());
-//        if (PAPHT.get(concat) == null) {
-//            SC.load(getDefaultBlock());
-//            return BranchResult.NOT_TAKEN;
-//        }
-        PAPHT.setDefault(concat , getDefaultBlock());
-        SC.load(PAPHT.get(concat));
-        if (SC.read()[0] == Bit.ONE)
-            return BranchResult.TAKEN;
-        return BranchResult.NOT_TAKEN;
+        try {
+            SC.load(PAPHT.get(concat));
+            if (SC.read()[0] == Bit.ONE)
+                return BranchResult.TAKEN;
+            return BranchResult.NOT_TAKEN;
+        }
+        catch (Exception e) {
+            SC.load(getDefaultBlock());
+            return BranchResult.NOT_TAKEN;
+        }
     }
 
     /**
@@ -76,9 +77,7 @@ public class GAp implements BranchPredictor {
         Bit[] concat = new Bit[bI.length + BHR.getLength()];
         System.arraycopy(bI, 0, concat, 0, bI.length);
         System.arraycopy(this.BHR.read(), 0, concat, bI.length, this.BHR.getLength());
-        if (PAPHT.get(concat) == null)
-            PAPHT.putIfAbsent(concat, SC.read());
-        PAPHT.put(concat, SC.read());
+        PAPHT.putIfAbsent(concat, SC.read());
         BHR.insert(Bit.of(BranchResult.isTaken(actual)));
     }
 
