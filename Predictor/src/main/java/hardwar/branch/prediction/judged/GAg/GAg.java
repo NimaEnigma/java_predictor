@@ -60,6 +60,8 @@ public class GAg implements BranchPredictor {
     public void update(BranchInstruction instruction, BranchResult actual) {
         // TODO: complete Task 2
         SC.load(CombinationalLogic.count(SC.read(), BranchResult.isTaken(actual), CountMode.SATURATING));
+        if (PHT.get(BHR.read()) == null)
+            PHT.putIfAbsent(BHR.read(), SC.read());
         PHT.put(BHR.read(), SC.read());
         BHR.insert(Bit.of(BranchResult.isTaken(actual)));
     }
