@@ -40,10 +40,16 @@ public class PAg implements BranchPredictor {
      */
     @Override
     public BranchResult predict(BranchInstruction instruction) {
-        SC.load(PHT.setDefault((PABHR.read(instruction.getInstructionAddress())).read(),getDefaultBlock()));
-        if (SC.read()[0] == Bit.ONE)
-            return BranchResult.TAKEN;
-        return BranchResult.NOT_TAKEN;
+        try {
+            SC.load(PHT.setDefault((PABHR.read(instruction.getInstructionAddress())).read(), getDefaultBlock()));
+            if (SC.read()[0] == Bit.ONE)
+                return BranchResult.TAKEN;
+            return BranchResult.NOT_TAKEN;
+        }
+        catch (Exception e) {
+            SC.load(getDefaultBlock());
+            return BranchResult.NOT_TAKEN;
+        }
     }
 
     /**
