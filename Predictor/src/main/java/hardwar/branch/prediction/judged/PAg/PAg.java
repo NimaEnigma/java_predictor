@@ -25,13 +25,13 @@ public class PAg implements BranchPredictor {
     public PAg(int BHRSize, int SCSize, int branchInstructionSize) {
         // TODO: complete the constructor
         // Initialize the PABHR with the given bhr and branch instruction size
-        PABHR = null;
+        PABHR = new RegisterBank(branchInstructionSize,BHRSize);
 
         // Initialize the PHT with a size of 2^size and each entry having a saturating counter of size "SCSize"
-        PHT = null;
+        PHT = new PageHistoryTable((int)Math.pow(2,BHRSize),SCSize);
 
         // Initialize the SC register
-        SC = null;
+        SC = new SIPORegister("SC" , SCSize , null);
     }
 
     /**
@@ -40,7 +40,9 @@ public class PAg implements BranchPredictor {
      */
     @Override
     public BranchResult predict(BranchInstruction instruction) {
-        // TODO: complete Task 1
+        SC.load(PHT.setDefault((PABHR.read(instruction.getInstructionAddress())).read(),getDefaultBlock()));
+        if (SC.read()[0] == Bit.ONE)
+            return BranchResult.TAKEN;
         return BranchResult.NOT_TAKEN;
     }
 
@@ -51,6 +53,9 @@ public class PAg implements BranchPredictor {
     @Override
     public void update(BranchInstruction instruction, BranchResult actual) {
         // TODO: complete Task 2
+        SC.load(CombinationalLogic.count(SC.read(), BranchResult.isTaken(actual), CountMode.SATURATING));
+        PHT.putIfAbsent((PABHR.read(instruction.getInstructionAddress())).read() , SC.read());
+        PABHR.read(instruction.getInstructionAddress()).insert(Bit.of(BranchResult.isTaken(actual)));
     }
 
     /**
