@@ -25,17 +25,17 @@ public class GAp implements BranchPredictor {
      */
     public GAp(int BHRSize, int SCSize, int branchInstructionSize) {
         // TODO: complete the constructor
-        this.branchInstructionSize = 0;
+        this.branchInstructionSize = branchInstructionSize;
 
         // Initialize the BHR register with the given size and no default value
-        this.BHR = null;
+        this.BHR = new SIPORegister("BHR" , BHRSize , null);
 
         // Initializing the PAPHT with BranchInstructionSize as PHT Selector and 2^BHRSize row as each PHT entries
         // number and SCSize as block size
-        PAPHT = null;
+        PAPHT = new PerAddressPredictionHistoryTable(branchInstructionSize , (int)Math.pow(2 , SCSize) , SCSize);
 
         // Initialize the SC register
-        SC = null;
+        SC = new SIPORegister("SC" , SCSize , null);
     }
 
     /**
@@ -47,6 +47,17 @@ public class GAp implements BranchPredictor {
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
         // TODO: complete Task 1
+        Bit[] bI = branchInstruction.getInstructionAddress();
+        Bit[] concat = new Bit[bI.length + BHR.getLength()];
+        System.arraycopy(bI, 0, concat, 0, bI.length);
+        System.arraycopy(this.BHR.read(), 0, concat, bI.length, this.BHR.getLength());
+        if (PAPHT.get(concat) == null) {
+            SC.load(getDefaultBlock());
+            return BranchResult.NOT_TAKEN;
+        }
+        SC.load(PAPHT.get(concat));
+        if (SC.read()[0] == Bit.ONE)
+            return BranchResult.TAKEN;
         return BranchResult.NOT_TAKEN;
     }
 
@@ -59,6 +70,11 @@ public class GAp implements BranchPredictor {
     @Override
     public void update(BranchInstruction branchInstruction, BranchResult actual) {
         // TODO : complete Task 2
+        SC.load(CombinationalLogic.count(SC.read(), BranchResult.isTaken(actual), CountMode.SATURATING));
+        if (PAPHT.get(BHR.read()) == null)
+            PAPHT.putIfAbsent(BHR.read(), SC.read());
+        PAPHT.put(BHR.read(), SC.read());
+        BHR.insert(Bit.of(BranchResult.isTaken(actual)));
     }
 
 
