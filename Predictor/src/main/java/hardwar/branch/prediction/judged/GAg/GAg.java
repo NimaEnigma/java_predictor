@@ -2,6 +2,7 @@ package hardwar.branch.prediction.judged.GAg;
 
 import hardwar.branch.prediction.shared.*;
 import hardwar.branch.prediction.shared.devices.*;
+import java.lang.Math;
 
 import java.util.Arrays;
 
@@ -23,13 +24,12 @@ public class GAg implements BranchPredictor {
     public GAg(int BHRSize, int SCSize) {
         // TODO : complete the constructor
         // Initialize the BHR register with the given size and no default value
-        this.BHR = null;
+        this.BHR = new SIPORegister("BHR" , BHRSize , null);
 
         // Initialize the PHT with a size of 2^size and each entry having a saturating counter of size "SCSize"
-        PHT = null;
-
-        // Initialize the SC register
-        SC = null;
+        PHT = new PageHistoryTable((int)(Math.pow(2 , BHRSize)) , SCSize);
+        //Init SC register
+        SC = new SIPORegister("SC" , SCSize , getDefaultBlock());
     }
 
     /**
@@ -40,7 +40,13 @@ public class GAg implements BranchPredictor {
      */
     @Override
     public BranchResult predict(BranchInstruction branchInstruction) {
-        // TODO : complete Task 1
+        if (PHT.get(BHR.read()) == null) {//maybe problematicccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+            SC.load(getDefaultBlock());
+            return BranchResult.NOT_TAKEN;
+        }
+        SC.load(PHT.get(BHR.read()));
+        if (SC.read()[0] == Bit.ONE)
+            return BranchResult.TAKEN;
         return BranchResult.NOT_TAKEN;
     }
 
@@ -53,6 +59,9 @@ public class GAg implements BranchPredictor {
     @Override
     public void update(BranchInstruction instruction, BranchResult actual) {
         // TODO: complete Task 2
+        SC.load(CombinationalLogic.count(SC.read(), BranchResult.isTaken(actual), CountMode.SATURATING));
+        PHT.put(BHR.read(), SC.read());
+        BHR.insert(Bit.of(BranchResult.isTaken(actual)));
     }
 
 
