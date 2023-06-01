@@ -29,7 +29,7 @@ public class GAg implements BranchPredictor {
         // Initialize the PHT with a size of 2^size and each entry having a saturating counter of size "SCSize"
         PHT = new PageHistoryTable((int)(Math.pow(2 , BHRSize)) , SCSize);
         //Init SC register
-        SC = new SIPORegister("SC" , SCSize , getDefaultBlock());
+        SC = new SIPORegister("SC" , SCSize , null);
     }
 
     /**
